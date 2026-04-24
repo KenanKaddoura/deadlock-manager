@@ -47,6 +47,22 @@ Use this to remove compiled .o files and the executable for a fresh build.
 
 ---
 
+## 📊 Default System Configuration
+
+By default, the simulation initializes with **5 Customers** and **3 Resource Types**. The maximum resource demand for each customer is hardcoded in the system for testing purposes as follows:
+
+| Customer ID | Resource 1 | Resource 2 | Resource 3 |
+| :---: | :---: | :---: | :---: |
+| **0** | 7 | 5 | 3 |
+| **1** | 3 | 2 | 2 |
+| **2** | 9 | 0 | 2 |
+| **3** | 2 | 2 | 2 |
+| **4** | 4 | 3 | 3 |
+
+*Note: You can modify the `temp_max` array inside `src/main.c` to test different system stress limits and deadlock scenarios.*
+
+---
+
 ## 💻 Usage & Testing
 The system requires you to specify the initial available resources as command-line arguments when executing the program. The default configuration uses 3 resource types and 5 customers.
 ### Command Syntax:
@@ -72,3 +88,31 @@ Severely limits resources. The Banker's Algorithm will frequently deny requests 
 ```
 ./deadlock_manager 8 4 4
 ```
+
+### 📝 Execution Results
+
+Below are the raw console outputs demonstrating the system's behavior and the Banker's Algorithm in action under different resource constraints.
+
+**Command:** `make`
+**Result:**
+```text
+gcc -Wall -Wextra -g -pthread -c src/main.c -o src/main.o
+gcc -Wall -Wextra -g -pthread -c src/banker.c -o src/banker.o
+gcc -Wall -Wextra -g -pthread -c src/simulator.c -o src/simulator.o
+gcc -Wall -Wextra -g -pthread -o deadlock_manager src/main.o src/banker.o src/simulator.o
+```
+
+**Command:** `./deadlock_manager 10 5 7`
+**Result:**
+<img width="469" height="1032" alt="image" src="https://github.com/user-attachments/assets/b8e8af2c-1306-4fe3-8022-7cf1f49c16d2" />
+
+**Command:** `./deadlock_manager 50 50 50`
+**Result:**
+<img width="391" height="1033" alt="image" src="https://github.com/user-attachments/assets/5aae50b1-448e-408f-ae90-c46165572a9b" />
+<img width="387" height="137" alt="image" src="https://github.com/user-attachments/assets/35ce14b6-1fdd-4039-a0ee-b0919283cbaf" />
+
+
+**Command:** `./deadlock_manager 8 4 4`
+**Result:**
+<img width="465" height="798" alt="image" src="https://github.com/user-attachments/assets/9a8c96be-b85d-47ff-93fe-115e42c2d860" />
+

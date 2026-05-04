@@ -115,7 +115,3 @@ gcc -Wall -Wextra -g -pthread -o deadlock_manager src/main.o src/banker.o src/si
 **Command:** `./deadlock_manager 8 4 4`
 **Result:**
 <img width="465" height="798" alt="image" src="https://github.com/user-attachments/assets/9a8c96be-b85d-47ff-93fe-115e42c2d860" />
-<<<<<<< HEAD
-=======
-
->>>>>>> refs/remotes/origin/master

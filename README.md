@@ -5,7 +5,7 @@ This project is a multithreaded Operating System resource manager implemented in
 **Developed by Team 12:**
 * Abdulrahman Alhaidari 
 * Kenan Kaddoura 
-* Ayman
+* Ayman Al Johani
 
 ---
 

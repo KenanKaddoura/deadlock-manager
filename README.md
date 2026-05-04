@@ -64,54 +64,69 @@ By default, the simulation initializes with **5 Customers** and **3 Resource Typ
 ---
 
 ## 💻 Usage & Testing
-The system requires you to specify the initial available resources as command-line arguments when executing the program. The default configuration uses 3 resource types and 5 customers.
+The system supports two distinct operational modes. You must specify the initial available resources as command-line arguments. The default configuration uses **3 resource types** and **5 customers**.
 ### Command Syntax:
-```
+```bash
+# For Avoidance (Banker's Algorithm) Mode:
 ./deadlock_manager <resource_1> <resource_2> <resource_3>
+
+# For Detection & Recovery Mode:
+./deadlock_manager recovery <resource_1> <resource_2> <resource_3>
 ```
 
-### Test Scenarios
-**1. Normal Operation (Balanced Resources)**  
-Provides a balanced environment where threads compete but can eventually finish.
-```
-./deadlock_manager 10 5 7
-```
-
-**2. Resource Abundance (Stress-Free)**  
-Provides more than enough resources. You will see near-instant approvals.
-```
-./deadlock_manager 50 50 50
-```
-
-**3. Resource Scarcity (High Stress)**  
-Severely limits resources. The Banker's Algorithm will frequently deny requests to protect the system, forcing threads to wait.
+### Phase 3 Test Scenarios
+**1. Banker Mode: Avoidance under High Stress**  
+Algorithm will frequently deny requests to protect the system, preventing deadlocks entirely.
 ```
 ./deadlock_manager 8 4 4
 ```
 
-### 📝 Execution Results
-
-Below are the raw console outputs demonstrating the system's behavior and the Banker's Algorithm in action under different resource constraints.
-
-**Command:** `make`
-**Result:**
-```text
-gcc -Wall -Wextra -g -pthread -c src/main.c -o src/main.o
-gcc -Wall -Wextra -g -pthread -c src/banker.c -o src/banker.o
-gcc -Wall -Wextra -g -pthread -c src/simulator.c -o src/simulator.o
-gcc -Wall -Wextra -g -pthread -o deadlock_manager src/main.o src/banker.o src/simulator.o
+**2. Recovery Mode: Deadlock Detection & Victim Termination**  
+Algorithm, forcing a deadlock. The background monitor will detect the circular wait, terminate a victim process, and reclaim its resources to allow the system to recover.
+```
+./deadlock_manager recovery 3 2 2
 ```
 
-**Command:** `./deadlock_manager 10 5 7`
-**Result:**
-<img width="469" height="1032" alt="image" src="https://github.com/user-attachments/assets/b8e8af2c-1306-4fe3-8022-7cf1f49c16d2" />
+### 📝 Execution Results
 
-**Command:** `./deadlock_manager 50 50 50`
-**Result:**
-<img width="391" height="1033" alt="image" src="https://github.com/user-attachments/assets/5aae50b1-448e-408f-ae90-c46165572a9b" />
-<img width="387" height="137" alt="image" src="https://github.com/user-attachments/assets/35ce14b6-1fdd-4039-a0ee-b0919283cbaf" />
+Below are the raw console outputs demonstrating the system's behavior in both modes.
 
+**Mode 1: Banker's Algorithm (Avoidance)**  
 
 **Command:** `./deadlock_manager 8 4 4`
 **Result:**
-<img width="465" height="798" alt="image" src="https://github.com/user-attachments/assets/9a8c96be-b85d-47ff-93fe-115e42c2d860" />
+```text
+System Initialized in BANKER MODE.
+Initial Available Resources: 8 4 4
+
+[Customer 0] Attempting to REQUEST: 3 4 1
+[DENIED] Customer 0 request leads to UNSAFE state.
+[Customer 1] Attempting to REQUEST: 0 2 0
+[DENIED] Customer 1 request leads to UNSAFE state.
+[Customer 4] Attempting to REQUEST: 1 1 0
+[DENIED] Customer 4 request leads to UNSAFE state.
+...
+[Simulation completes safely with no deadlocks]
+```
+
+**Mode 2: Detection & Recovery (Phase 3)**  
+
+**Command:** `./deadlock_manager recovery 3 2 2`
+**Result:**
+```text
+System Initialized in RECOVERY MODE.
+Initial Available Resources: 3 2 2
+
+[Customer 0] Attempting to REQUEST: 2 2 1
+[GRANTED] Customer 0 request approved (Blind Allocation).
+[Customer 3] Attempting to REQUEST: 0 0 1
+[GRANTED] Customer 3 request approved (Blind Allocation).
+
+!!! [DEADLOCK DETECTED] Customer 0 is stuck! Initiating Recovery !!!
+>>> [RECOVERY] Terminated Customer 0 and reclaimed resources. <<<
+
+[Customer 3] Attempting to RELEASE: 0 0 1
+[RELEASED] Customer 3 released resources.
+[Customer 3] Finished execution.
+--- Simulation Complete ---
+```
